@@ -23,7 +23,7 @@ To setup a KillBill integration, add a billing block of configuration as shown i
 .. code-block:: python
 
     # Example of settings for billing using KillBill API.
-    NODECONDUCTOR['BILLING'] = {
+    NODECONDUCTOR_KILLBILL['BACKEND'] = {
         # url of billing API
         'api_url': 'http://killbill.example.com/1.0/kb/',
         # credentials
