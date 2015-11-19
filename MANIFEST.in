@@ -1,0 +1,2 @@
+include *.md *.rst
+recursive-include src *.html *.txt
