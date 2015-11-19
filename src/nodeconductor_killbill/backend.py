@@ -32,14 +32,12 @@ class KillBillBackend(object):
     """ Killbill backend -- http://killbill.io/api/
         Test settings:
 
-        NODECONDUCTOR['BILLING'] = {
-            'BACKEND': {
-                'api_url': 'http://killbill.example.com:8080/1.0/kb/',
-                'username': 'admin',
-                'password': 'password',
-                'api_key': 'bob',
-                'api_secret': 'lazar',
-            }
+        NODECONDUCTOR_KILLBILL['BACKEND'] = {
+            'api_url': 'http://killbill.example.com:8080/1.0/kb/',
+            'username': 'admin',
+            'password': 'password',
+            'api_key': 'bob',
+            'api_secret': 'lazar',
         }
     """
 
@@ -130,7 +128,7 @@ class KillBillAPI(object):
         if not all((api_url, api_key, api_secret)):
             raise KillBillError(
                 "Missed billing credentials. They must be supplied explicitly "
-                "or defined within settings.NODECONDUCTOR.BILLING")
+                "or defined within settings.NODECONDUCTOR_KILLBILL.BACKEND")
 
         self.currency = kwargs.get('currency', 'USD')
         self.credentials = dict(
