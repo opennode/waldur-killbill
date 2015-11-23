@@ -83,7 +83,7 @@ class KillBillBackend(object):
         client_id = self.get_or_create_client()
 
         # Update or create invoices from backend
-        cur_invoices = {i.backend_id: i for i in self.customer.invoices.all()}
+        cur_invoices = {i.backend_id: i for i in self.customer.killbill_invoices.all()}
         for invoice in self.api.get_invoices(client_id):
             cur_invoice = cur_invoices.pop(invoice['backend_id'], None)
             if cur_invoice:
@@ -91,7 +91,7 @@ class KillBillBackend(object):
                 cur_invoice.amount = invoice['amount']
                 cur_invoice.save(update_fields=['date', 'amount'])
             else:
-                cur_invoice = self.customer.invoices.create(
+                cur_invoice = self.customer.killbill_invoices.create(
                     backend_id=invoice['backend_id'],
                     date=invoice['date'],
                     amount=invoice['amount'])
