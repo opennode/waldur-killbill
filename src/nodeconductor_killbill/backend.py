@@ -9,6 +9,7 @@ from lxml import etree
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.utils import six
 
 from nodeconductor.core.utils import hours_in_month
 from nodeconductor.cost_tracking.models import DefaultPriceListItem
@@ -425,8 +426,12 @@ class KillBill(object):
                 headers['X-Killbill-CreatedBy'] = 'NodeConductor'
 
             url = url if url.startswith(self.api_url) else self.api_url + url
-            response = getattr(requests, method.lower())(
-                url, params=kwargs, data=data, auth=self.auth, headers=headers, verify=verify)
+
+            try:
+                response = getattr(requests, method.lower())(
+                    url, params=kwargs, data=data, auth=self.auth, headers=headers, verify=verify)
+            except requests.ConnectionError as e:
+                six.reraise(KillBillError, e)
 
             codes = requests.status_codes.codes
             response_type = response_types.get(response.headers.get('content-type'), '')
