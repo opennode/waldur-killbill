@@ -38,14 +38,14 @@ class InvoiceAdmin(admin.ModelAdmin):
 
         send_task('killbill', 'sync_invoices')()
 
-        self.message_user(request, "KillBill invoices generated and scheduled for sync from backed.")
+        self.message_user(request, "KillBill invoices generated and scheduled for sync from backend.")
 
         return redirect(reverse('admin:nodeconductor_killbill_invoice_changelist'))
 
     def sync(self, request):
         send_task('killbill', 'sync_invoices')()
 
-        self.message_user(request, "KillBill invoices scheduled for sync from backed.")
+        self.message_user(request, "KillBill invoices scheduled for sync from backend.")
 
         return redirect(reverse('admin:nodeconductor_killbill_invoice_changelist'))
 
