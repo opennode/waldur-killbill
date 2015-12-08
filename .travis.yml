@@ -1,0 +1,19 @@
+language: python
+python:
+- '2.7'
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get install gcc libffi-dev libldap2-dev libsasl2-dev libssl-dev python-dev
+install:
+- python setup.py install
+script:
+- python setup.py test
+deploy:
+  provider: pypi
+  distributions: "sdist bdist_wheel"
+  user: opennode
+  password:
+    secure: M+7SwKsnkjtZ9QH/XXqJAj1lcIel2hISOrNS9Om1m+eGUV1pRHj7YDilYr7+I0ewPBbD94GbZ0v07/AbMJ9GBDMg8bvhaYmhGKbmGBRiX5mNZ3vZp319sg1IV0YsZD3+Vp97hgZi5kxRlR1dXf2aTu3ThECoa6I4VPpDLSQpdUQ9LulhEN7zMPOFBlUjr93eS5CfHQ26xuPLTmkECLugBHvzVh0RL5cEhTdV5Tq84dbUN2UR8Yyz62OQabLrmC/7mdW6NU1rhgs7ZgHw4AO2BATKRotAZTkTkRmswu6ub5wWSHNrTz1x+dOS9HCpT42TpQyyzhwm+Fr+1oNxxFT9yjxmi6LR4QfbsfYPElW6PZRqBxXfHIN18nq1cPk2l2vyVhi647rmHG60BlrvNsUYePEPXn8VjHRP6fX9hIx7iB0JCZEjTb2xIdbbPwwr7925ayLK1tCrUIhsb44fi9VHGGAGJpJdhZK9hlzwpZlPIuT40cwTZildVFQktGVtdxm1myFwdeEDQy9ckl6BxcWnhqkxxpDA0fvWoJ3Zvu/Vt41YkGH5g/mAh/G0noWYO0a/HWi4RBEgEU7TW+8xuqWwbiXjcpUoy2J8+i5oMepOsGjTSNdSJAbhQMzstI/Ky7q0/4LmxDhy75Ol/bC9y54vGBxq4yV/jRa3UVF5VIQ7zLA=
+  on:
+    tags: true
+    repo: opennode/nodeconductor-killbill
