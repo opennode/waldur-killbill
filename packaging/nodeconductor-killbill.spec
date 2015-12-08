@@ -1,7 +1,7 @@
 Name: nodeconductor-killbill
 Summary: KillBill plugin for NodeConductor
 Group: Development/Libraries
-Version: 0.1.0
+Version: 0.3.2
 Release: 1.el7
 License: Copyright 2015 OpenNode LLC. All rights reserved.
 Url: http://nodeconductor.com
@@ -36,5 +36,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Tue Dec 8 2015 Jenkins <jenkins@opennodecloud.com> - 0.3.2-1.el7
+- New upstream release
+
 * Thu Nov 19 2015 Roman Kosenko <roman@opennodecloud.com> - 0.1.0-1.el7
 - Initial version of the package
