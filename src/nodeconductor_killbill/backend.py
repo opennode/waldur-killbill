@@ -290,10 +290,15 @@ class KillBillAPI(object):
             data=json.dumps(fields))
 
     def update_subscription_fields(self, subscription_id, **data):
-        fields = self.subscriptions.get(subscription_id, 'customFields')
-        flist = ','.join(f['customFieldId'] for f in fields if f['name'] in data)
-        self.subscriptions._object_query(
-            subscription_id, 'customFields', method='DELETE', customFieldList=flist)
+        try:
+            fields = self.subscriptions.get(subscription_id, 'customFields')
+        except NotFoundKillBillError:
+            pass
+        else:
+            flist = ','.join(f['customFieldId'] for f in fields if f['name'] in data)
+            self.subscriptions._object_query(
+                subscription_id, 'customFields', method='DELETE', customFieldList=flist)
+
         self.set_subscription_fields(subscription_id, **data)
 
     def propagate_pricelist(self):
