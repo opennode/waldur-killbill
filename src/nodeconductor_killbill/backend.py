@@ -139,6 +139,7 @@ class KillBillAPI(object):
             auth=(username, password))
 
         self.accounts = KillBill.Account(self.credentials)
+        self.bundles = KillBill.Bundle(self.credentials)
         self.catalog = KillBill.Catalog(self.credentials)
         self.invoices = KillBill.Invoice(self.credentials)
         self.subscriptions = KillBill.Subscription(self.credentials)
@@ -209,6 +210,11 @@ class KillBillAPI(object):
         #
         # killbill server must be run in test mode for these tricks
         # -Dorg.killbill.server.test.mode=true
+
+        try:
+            return self.bundles.list(externalKey=resource.uuid.hex)['subscriptions'][0]
+        except NotFoundKillBillError:
+            pass
 
         content_type = ContentType.objects.get_for_model(resource)
         product_name = self._get_product_name_for_content_type(content_type)
@@ -485,6 +491,9 @@ class KillBill(object):
 
     class Account(BaseResource):
         path = 'accounts'
+
+    class Bundle(BaseResource):
+        path = 'bundles'
 
     class Catalog(BaseResource):
         path = 'catalog'
