@@ -212,7 +212,8 @@ class KillBillAPI(object):
         # -Dorg.killbill.server.test.mode=true
 
         try:
-            return self.bundles.list(externalKey=resource.uuid.hex)['subscriptions'][0]
+            subscriptions = self.bundles.list(externalKey=resource.uuid.hex)['subscriptions']
+            return subscriptions[0]['subscriptionId']
         except NotFoundKillBillError:
             pass
 
@@ -324,7 +325,7 @@ class KillBillAPI(object):
 
             usages = E.usages()
             for priceitem in DefaultPriceListItem.objects.filter(resource_content_type=cid):
-                usage_name = re.sub(r'[\s:;,+%&$@/]+', '', "{}-{}".format(priceitem.item_type, priceitem.key))
+                usage_name = re.sub(r'[\s:;,+%&$@/]+', '', "{}-{}-{}".format(priceitem.item_type, priceitem.key, cid))
                 unit_name = UNIT_PREFIX + usage_name
                 usage = E.usage(
                     E.billingPeriod('MONTHLY'),

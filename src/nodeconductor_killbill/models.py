@@ -1,6 +1,5 @@
 import os
 import logging
-import functools
 import collections
 import StringIO
 import xhtml2pdf.pisa as pisa
@@ -9,7 +8,6 @@ from django.db import models
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
-from django.utils.lru_cache import lru_cache
 from django.utils.encoding import python_2_unicode_compatible
 
 from nodeconductor.core import models as core_models
@@ -17,7 +15,7 @@ from nodeconductor.cost_tracking.models import DefaultPriceListItem
 from nodeconductor.logging.log import LoggableMixin
 from nodeconductor.structure.models import Customer
 
-from .backend import UNIT_PREFIX, KillBillBackend, KillBillError
+from .backend import UNIT_PREFIX, KillBillBackend
 
 
 logger = logging.getLogger(__name__)
