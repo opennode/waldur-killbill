@@ -28,7 +28,7 @@ def sync_pricelist():
 def sync_invoices():
     customers = set()
     for model in PaidResource.get_all_models():
-        for resource in model.objects.all():
+        for resource in model.objects.exclude(billing_backend_id=''):
             customers.add(resource.customer)
 
     for customer in customers:
@@ -71,7 +71,7 @@ def update_today_usage_of_resource(resource_str):
                 "Can't update usage for resource %s which is not subscribed to backend", resource_str)
             return
 
-        numerical = ['storage', 'users']  # XXX: use consistent method for usage calculation
+        numerical = cs_backend.NUMERICAL
         content_type = ContentType.objects.get_for_model(resource)
 
         units = {
