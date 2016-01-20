@@ -93,8 +93,11 @@ def update_today_usage_of_resource(resource_str):
                 except KeyError:
                     logger.error("Can't find price for usage item %s:%s", key, val)
 
-        kb_backend = KillBillBackend()
-        kb_backend.add_usage_data(resource, usage)
+        try:
+            kb_backend = KillBillBackend()
+            kb_backend.add_usage_data(resource, usage)
+        except KillBillError as e:
+            logger.error("Can't add usage for resource %s: %s", resource, e)
 
         resource.last_usage_update_time = timezone.now()
         resource.save(update_fields=['last_usage_update_time'])
