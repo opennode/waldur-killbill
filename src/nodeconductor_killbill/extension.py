@@ -26,6 +26,14 @@ class KillBillExtension(NodeConductorExtension):
                 'account': '123456789',
             },
         }
+        # mapping of resource types to human friendly titles in invoices
+        NODECONDUCTOR_KILLBILL_RESOURCE_NAMES = {
+            'IaaS.Instance': 'OpenStack Instance',
+            'OpenStack.Instance': 'OpenStack Instance',
+            'SaltStack.ExchangeTenant': 'MS Exchange tenant',
+            'SaltStack.SharepointTenant': 'MS SharePoint tenant',
+            'SugarCRM.CRM': 'SugarCRM Instance',
+        }
 
     @staticmethod
     def django_app():
