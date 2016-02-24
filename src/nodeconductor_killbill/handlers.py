@@ -58,7 +58,7 @@ def update_resource_name(sender, instance, created=False, **kwargs):
     if not created and instance.billing_backend_id and instance.name != instance._old_values['name']:
         backend = KillBillBackend()
         backend.update_subscription_fields(
-            instance.billing_backend_id, resource_name=instance.name)
+            instance.billing_backend_id, resource_name=backend.get_resource_name(instance))
 
 
 def update_project_name(sender, instance, created=False, **kwargs):
