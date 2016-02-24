@@ -13,6 +13,7 @@ from django.utils import six
 
 from nodeconductor.core.utils import hours_in_month
 from nodeconductor.cost_tracking.models import DefaultPriceListItem
+from nodeconductor.structure import SupportedServices
 
 from . import __version__
 
@@ -227,9 +228,12 @@ class KillBillAPI(object):
             billingPeriod='MONTHLY',
             priceList='DEFAULT')
 
+        mapping = settings.NODECONDUCTOR_KILLBILL_RESOURCE_NAMES
+        resource_type = SupportedServices.get_name_for_model(resource)
+
         self.set_subscription_fields(
             subscription['subscriptionId'],
-            resource_name=resource.name,
+            resource_name='{} {}'.format(mapping.get(resource_type, resource_type), resource.name),
             project_name=resource.project.full_name)
 
         return subscription['subscriptionId']
