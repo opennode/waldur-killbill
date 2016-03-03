@@ -283,7 +283,7 @@ class KillBillAPI(object):
 
     def get_invoices(self, client_id):
         invoices = self.accounts.get(client_id, 'invoices', withItems=True)
-        return [self._parse_invoice_data(invoice) for invoice in invoices]
+        return [self._parse_invoice_data(invoice) for invoice in invoices if invoice['amount']]
 
     def get_invoice(self, invoice_id):
         invoice = self.invoices.get(invoice_id, withItems=True)
