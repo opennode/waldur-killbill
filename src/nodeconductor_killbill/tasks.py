@@ -21,7 +21,7 @@ def sync_pricelist():
     try:
         backend.propagate_pricelist()
     except KillBillError as e:
-        logger.error("Can't propagade pricelist to %s: %s", backend, e)
+        logger.error("Can't propagate pricelist to %s: %s", backend, e)
 
 
 @shared_task(name='nodeconductor.killbill.sync_invoices')
