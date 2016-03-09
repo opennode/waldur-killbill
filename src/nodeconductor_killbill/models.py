@@ -126,9 +126,17 @@ class Invoice(LoggableMixin, core_models.UuidMixin):
                 unit = ('GB/hour' if price_item.item_type == 'storage' else 'hour') + (
                     's' if usage > 1 else '')
 
-                item['name'] = price_item.name
-                item['usage'] = "{:.2f} {} x {:.2f} {}".format(
-                    usage, unit, price_item.value, item['currency'])
+                # XXX: black magic need to replace MBs to GBs for display of storage values
+                if price_item.item_type == 'storage' and 'MB' in price_item.name:
+                    from decimal import Decimal
+                    item['name'] = price_item.name.replace('MB', 'GB')
+                    usage /= 1024.0
+                    value = price_item.value * Decimal('1024.0')
+                else:
+                    item['name'] = price_item.name
+                    value = price_item.value
+                item['usage'] = "{:.3f} {} x {:.3f} {}".format(
+                    usage, unit, value, item['currency'])
 
             resource = item['resource']
             resources.setdefault(resource, {'items': [], 'amount': 0})

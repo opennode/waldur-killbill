@@ -2,7 +2,7 @@
 <html>
     <head>
         <style type="text/css">
-        body {font-size: 18px}
+        body {font-size: 14px}
         @page {
             @frame content_frame {          /* Content Frame */
                 left: 50pt; width: 512pt; top: 40pt; height: 632pt;
@@ -16,6 +16,10 @@
             font-size: 14px;
             text-align: right;
         }
+
+        #header_content {
+            font-size: 18px;
+        }
         </style>
     </head>
     <body>
@@ -24,10 +28,10 @@
             of <pdf:pagecount>
         </div>
 
-        <table>
+        <table id="header_content">
         <tr>
-            <td width="55%"><img src="{{ logo }}"></td>
-            <td width="45%"><h2>
+            <td width="50%"><img src="{{ logo }}"></td>
+            <td width="50%"><h2>
                 Usage report for invoice #{{ invoice.invoice_number }}<br>
                 <small>Customer: {{ customer.name }}</small>
             </h2></td>
@@ -41,13 +45,13 @@
             {% for resource, data in resources.items %}
             <tr>
                 <td colspan="2"><h2>{{ resource }}</h2></td>
-                <td align="right"><h2>{{ data.amount|floatformat:2|intcomma }} {{ invoice.currency }}</h2></td>
+                <td align="right"><h2>{{ data.amount|floatformat:3|intcomma }} {{ invoice.currency }}</h2></td>
             </tr>
             {% for item in data.items %}
             <tr>
                 <td width="30" align="right">{{ forloop.counter }}</td>
                 <td style="padding-left:5px">{{ item.name }} {{ item.usage }}</td>
-                <td width="250" align="right">{{ item.amount|floatformat:2|intcomma }} {{ item.currency }}</td>
+                <td width="250" align="right">{{ item.amount|floatformat:3|intcomma }} {{ item.currency }}</td>
             </tr>
             {% endfor %}
 
@@ -56,10 +60,10 @@
                 <td colspan="2">
                 <table cellpadding="5">
                 {% for item in data.items %}
-                <tr>
+                <tr style="border-bottom: 1px solid #ddd; padding: 3px;">
                     <td width="20" align="right">{{ forloop.counter }}</td>
-                    <td>{{ item.name }} {{ item.usage }}</td>
-                    <td width="150" align="right">{{ item.amount|floatformat:2|intcomma }} {{ item.currency }}</td>
+                    <td>{{ item.name }} <br> {{ item.usage }}</td>
+                    <td width="150" align="right">{{ item.amount|floatformat:3|intcomma }} {{ item.currency }}</td>
                 </tr>
                 {% endfor %}
                 </table>
@@ -71,7 +75,7 @@
             {% endfor %}
             <tr><td colspan="3" style="padding: 10px 0"><hr></td></tr>
             <tr style="font-size:24px">
-                <th align="right" colspan="3">Total: {{ invoice.amount|floatformat:2|intcomma }} {{ invoice.currency }}</th>
+                <th align="right" colspan="3">Total: {{ invoice.amount|floatformat:3|intcomma }} {{ invoice.currency }}</th>
             </tr>
         </table>
     </body>
