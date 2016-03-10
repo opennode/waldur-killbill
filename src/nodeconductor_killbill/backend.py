@@ -199,11 +199,6 @@ class KillBillAPI(object):
     def get_client_by_uuid(self, uuid):
         return self.accounts.list(externalKey=uuid)
 
-    def get_resource_name(self, resource):
-        mapping = settings.NODECONDUCTOR_KILLBILL_RESOURCE_NAMES
-        resource_type = SupportedServices.get_name_for_model(resource)
-        return '{} {}'.format(mapping.get(resource_type, resource_type), resource.name)
-
     def add_subscription(self, client_id, resource):
         # initial invoice is generated on subscribe (even with zero amount)
         # http://docs.killbill.io/0.15/userguide_subscription.html#five-minutes-create-subscription
@@ -235,7 +230,7 @@ class KillBillAPI(object):
 
         self.set_subscription_fields(
             subscription['subscriptionId'],
-            resource_name=self.get_resource_name(resource),
+            resource_name=resource.full_name,
             project_name=resource.project.full_name)
 
         return subscription['subscriptionId']
