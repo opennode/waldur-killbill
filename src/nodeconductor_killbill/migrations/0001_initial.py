@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import nodeconductor.logging.log
+import nodeconductor.logging.loggers
 import uuidfield.fields
 
 
@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(nodeconductor.logging.log.LoggableMixin, models.Model),
+            bases=(nodeconductor.logging.loggers.LoggableMixin, models.Model),
         ),
     ]
