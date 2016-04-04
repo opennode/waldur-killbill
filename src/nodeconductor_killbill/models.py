@@ -14,7 +14,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from nodeconductor.core import models as core_models
 from nodeconductor.cost_tracking.models import DefaultPriceListItem
-from nodeconductor.logging.log import LoggableMixin
+from nodeconductor.logging.loggers import LoggableMixin
 from nodeconductor.structure.models import Customer
 
 from .backend import UNIT_PREFIX, KillBillBackend
