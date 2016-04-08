@@ -1,6 +1,7 @@
 import re
 import json
 import requests
+import urlparse
 import logging
 
 from datetime import datetime, timedelta
@@ -442,7 +443,8 @@ class KillBill(object):
                 headers['Content-Type'] = self.type
                 headers['X-Killbill-CreatedBy'] = 'NodeConductor'
 
-            url = url if url.startswith(self.api_url) else self.api_url + url
+            if not urlparse.urlparse(url).netloc:
+                url = self.api_url + url
 
             try:
                 response = getattr(requests, method.lower())(
