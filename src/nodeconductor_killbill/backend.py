@@ -13,7 +13,6 @@ from django.utils import six
 
 from nodeconductor.core.utils import hours_in_month
 from nodeconductor.cost_tracking.models import DefaultPriceListItem
-from nodeconductor.structure import SupportedServices
 
 from . import __version__
 
@@ -214,7 +213,12 @@ class KillBillAPI(object):
 
         try:
             subscriptions = self.bundles.list(externalKey=resource.uuid.hex)['subscriptions']
-            return subscriptions[0]['subscriptionId']
+            subscription_id = subscriptions[0]['subscriptionId']
+            self.update_subscription_fields(
+                subscription_id,
+                resource_name=resource.full_name,
+                project_name=resource.project.full_name)
+            return subscription_id
         except NotFoundKillBillError:
             pass
 
