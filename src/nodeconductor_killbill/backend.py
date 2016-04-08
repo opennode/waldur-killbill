@@ -163,17 +163,14 @@ class KillBillAPI(object):
         for item in raw_invoice['items']:
             if item['amount']:
                 fields = self.get_subscription_fields(item['subscriptionId'])
-                try:
-                    invoice['items'].append(dict(
-                        backend_id=item['invoiceItemId'],
-                        name=item['usageName'] or item['description'],
-                        project=fields['project_name'],
-                        resource=fields['resource_name'],
-                        currency=item['currency'],
-                        amount=item['amount'],
-                    ))
-                except KeyError as e:
-                    logger.error("Can't fetch data for invoice %s: %s" % (item['invoiceItemId'], e))
+                invoice['items'].append(dict(
+                    backend_id=item['invoiceItemId'],
+                    name=item['usageName'] or item['description'],
+                    project=fields['project_name'],
+                    resource=fields['resource_name'],
+                    currency=item['currency'],
+                    amount=item['amount'],
+                ))
 
         return invoice
 
@@ -216,7 +213,12 @@ class KillBillAPI(object):
 
         try:
             subscriptions = self.bundles.list(externalKey=resource.uuid.hex)['subscriptions']
-            return subscriptions[0]['subscriptionId']
+            subscription_id = subscriptions[0]['subscriptionId']
+            self.update_subscription_fields(
+                subscription_id,
+                resource_name=resource.full_name,
+                project_name=resource.project.full_name)
+            return subscription_id
         except NotFoundKillBillError:
             pass
 
