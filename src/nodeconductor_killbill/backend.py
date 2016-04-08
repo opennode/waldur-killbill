@@ -13,7 +13,6 @@ from django.utils import six
 
 from nodeconductor.core.utils import hours_in_month
 from nodeconductor.cost_tracking.models import DefaultPriceListItem
-from nodeconductor.structure import SupportedServices
 
 from . import __version__
 
@@ -164,14 +163,17 @@ class KillBillAPI(object):
         for item in raw_invoice['items']:
             if item['amount']:
                 fields = self.get_subscription_fields(item['subscriptionId'])
-                invoice['items'].append(dict(
-                    backend_id=item['invoiceItemId'],
-                    name=item['usageName'] or item['description'],
-                    project=fields['project_name'],
-                    resource=fields['resource_name'],
-                    currency=item['currency'],
-                    amount=item['amount'],
-                ))
+                try:
+                    invoice['items'].append(dict(
+                        backend_id=item['invoiceItemId'],
+                        name=item['usageName'] or item['description'],
+                        project=fields['project_name'],
+                        resource=fields['resource_name'],
+                        currency=item['currency'],
+                        amount=item['amount'],
+                    ))
+                except KeyError as e:
+                    logger.error("Can't fetch data for invoice %s: %s" % (item['invoiceItemId'], e))
 
         return invoice
 
