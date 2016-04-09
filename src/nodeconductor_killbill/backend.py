@@ -165,6 +165,7 @@ class KillBillAPI(object):
             if item['amount']:
                 fields = self.get_subscription_fields(item['subscriptionId'])
                 if not fields:
+                    logger.warn('Missing metadata, skipping invoice item %s' % item['invoiceItemId'])
                     continue
                 invoice['items'].append(dict(
                     backend_id=item['invoiceItemId'],
