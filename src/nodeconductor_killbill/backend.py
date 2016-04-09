@@ -164,6 +164,8 @@ class KillBillAPI(object):
         for item in raw_invoice['items']:
             if item['amount']:
                 fields = self.get_subscription_fields(item['subscriptionId'])
+                if not fields:
+                    continue
                 invoice['items'].append(dict(
                     backend_id=item['invoiceItemId'],
                     name=item['usageName'] or item['description'],
