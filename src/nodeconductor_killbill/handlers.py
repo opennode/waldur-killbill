@@ -72,7 +72,7 @@ def update_project_name(sender, instance, created=False, **kwargs):
                 except KillBillError as e:
                     logger.error(
                         "Failed to update project name in KillBill for resource %s: %s",
-                        resource, instance.to_string(), e)
+                        resource, e)
 
 
 def update_project_group_name(sender, instance, created=False, **kwargs):
@@ -86,4 +86,4 @@ def update_project_group_name(sender, instance, created=False, **kwargs):
                 except KillBillError as e:
                     logger.error(
                         "Failed to update project group name in KillBill for resource %s: %s",
-                        resource, instance.to_string(), e)
+                        resource, e)
