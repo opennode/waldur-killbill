@@ -1,6 +1,7 @@
 import re
 import json
 import requests
+import urlparse
 import logging
 
 from datetime import datetime, timedelta
@@ -139,6 +140,7 @@ class KillBillAPI(object):
             auth=(username, password))
 
         self.accounts = KillBill.Account(self.credentials)
+        self.bundles = KillBill.Bundle(self.credentials)
         self.catalog = KillBill.Catalog(self.credentials)
         self.invoices = KillBill.Invoice(self.credentials)
         self.subscriptions = KillBill.Subscription(self.credentials)
@@ -162,6 +164,9 @@ class KillBillAPI(object):
         for item in raw_invoice['items']:
             if item['amount']:
                 fields = self.get_subscription_fields(item['subscriptionId'])
+                if not fields:
+                    logger.warn('Missing metadata, skipping invoice item %s' % item['invoiceItemId'])
+                    continue
                 invoice['items'].append(dict(
                     backend_id=item['invoiceItemId'],
                     name=item['usageName'] or item['description'],
@@ -210,6 +215,17 @@ class KillBillAPI(object):
         # killbill server must be run in test mode for these tricks
         # -Dorg.killbill.server.test.mode=true
 
+        try:
+            subscriptions = self.bundles.list(externalKey=resource.uuid.hex)['subscriptions']
+            subscription_id = subscriptions[0]['subscriptionId']
+            self.update_subscription_fields(
+                subscription_id,
+                resource_name=resource.full_name,
+                project_name=resource.project.full_name)
+            return subscription_id
+        except NotFoundKillBillError:
+            pass
+
         content_type = ContentType.objects.get_for_model(resource)
         product_name = self._get_product_name_for_content_type(content_type)
         subscription = self.subscriptions.create(
@@ -222,7 +238,7 @@ class KillBillAPI(object):
 
         self.set_subscription_fields(
             subscription['subscriptionId'],
-            resource_name=resource.name,
+            resource_name=resource.full_name,
             project_name=resource.project.full_name)
 
         return subscription['subscriptionId']
@@ -290,10 +306,15 @@ class KillBillAPI(object):
             data=json.dumps(fields))
 
     def update_subscription_fields(self, subscription_id, **data):
-        fields = self.subscriptions.get(subscription_id, 'customFields')
-        flist = ','.join(f['customFieldId'] for f in fields if f['name'] in data)
-        self.subscriptions._object_query(
-            subscription_id, 'customFields', method='DELETE', customFieldList=flist)
+        try:
+            fields = self.subscriptions.get(subscription_id, 'customFields')
+        except NotFoundKillBillError:
+            pass
+        else:
+            flist = ','.join(f['customFieldId'] for f in fields if f['name'] in data)
+            self.subscriptions._object_query(
+                subscription_id, 'customFields', method='DELETE', customFieldList=flist)
+
         self.set_subscription_fields(subscription_id, **data)
 
     def propagate_pricelist(self):
@@ -313,7 +334,7 @@ class KillBillAPI(object):
 
             usages = E.usages()
             for priceitem in DefaultPriceListItem.objects.filter(resource_content_type=cid):
-                usage_name = re.sub(r'[\s:;,+%&$@/]+', '', "{}-{}".format(priceitem.item_type, priceitem.key))
+                usage_name = re.sub(r'[\s:;,+%&$@/]+', '', "{}-{}-{}".format(priceitem.item_type, priceitem.key, cid))
                 unit_name = UNIT_PREFIX + usage_name
                 usage = E.usage(
                     E.billingPeriod('MONTHLY'),
@@ -425,7 +446,8 @@ class KillBill(object):
                 headers['Content-Type'] = self.type
                 headers['X-Killbill-CreatedBy'] = 'NodeConductor'
 
-            url = url if url.startswith(self.api_url) else self.api_url + url
+            if not urlparse.urlparse(url).netloc:
+                url = self.api_url + url
 
             try:
                 response = getattr(requests, method.lower())(
@@ -480,6 +502,9 @@ class KillBill(object):
 
     class Account(BaseResource):
         path = 'accounts'
+
+    class Bundle(BaseResource):
+        path = 'bundles'
 
     class Catalog(BaseResource):
         path = 'catalog'

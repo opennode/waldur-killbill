@@ -58,22 +58,32 @@ def update_resource_name(sender, instance, created=False, **kwargs):
     if not created and instance.billing_backend_id and instance.name != instance._old_values['name']:
         backend = KillBillBackend()
         backend.update_subscription_fields(
-            instance.billing_backend_id, resource_name=instance.name)
+            instance.billing_backend_id, resource_name=instance.full_name)
 
 
 def update_project_name(sender, instance, created=False, **kwargs):
     if not created and instance.tracker.has_changed('name'):
         backend = KillBillBackend()
         for model in PaidResource.get_all_models():
-            for resource in model.objects.filter(project=instance):
-                backend.update_subscription_fields(
-                    resource.billing_backend_id, project_name=resource.project.full_name)
+            for resource in model.objects.exclude(billing_backend_id=None).filter(project=instance):
+                try:
+                    backend.update_subscription_fields(
+                        resource.billing_backend_id, project_name=resource.project.full_name)
+                except KillBillError as e:
+                    logger.error(
+                        "Failed to update project name in KillBill for resource %s: %s",
+                        resource, e)
 
 
 def update_project_group_name(sender, instance, created=False, **kwargs):
     if not created and instance.tracker.has_changed('name'):
         backend = KillBillBackend()
         for model in PaidResource.get_all_models():
-            for resource in model.objects.filter(project__project_groups=instance):
-                backend.update_subscription_fields(
-                    resource.billing_backend_id, project_name=resource.project.full_name)
+            for resource in model.objects.exclude(billing_backend_id=None).filter(project__project_groups=instance):
+                try:
+                    backend.update_subscription_fields(
+                        resource.billing_backend_id, project_name=resource.project.full_name)
+                except KillBillError as e:
+                    logger.error(
+                        "Failed to update project group name in KillBill for resource %s: %s",
+                        resource, e)
