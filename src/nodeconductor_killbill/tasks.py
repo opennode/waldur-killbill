@@ -21,14 +21,14 @@ def sync_pricelist():
     try:
         backend.propagate_pricelist()
     except KillBillError as e:
-        logger.error("Can't propagade pricelist to %s: %s", backend, e)
+        logger.error("Can't propagate pricelist to %s: %s", backend, e)
 
 
 @shared_task(name='nodeconductor.killbill.sync_invoices')
 def sync_invoices():
     customers = set()
     for model in PaidResource.get_all_models():
-        for resource in model.objects.all():
+        for resource in model.objects.exclude(billing_backend_id=''):
             customers.add(resource.customer)
 
     for customer in customers:
@@ -71,7 +71,7 @@ def update_today_usage_of_resource(resource_str):
                 "Can't update usage for resource %s which is not subscribed to backend", resource_str)
             return
 
-        numerical = ['storage', 'users']  # XXX: use consistent method for usage calculation
+        numerical = cs_backend.NUMERICAL
         content_type = ContentType.objects.get_for_model(resource)
 
         units = {
@@ -93,8 +93,11 @@ def update_today_usage_of_resource(resource_str):
                 except KeyError:
                     logger.error("Can't find price for usage item %s:%s", key, val)
 
-        kb_backend = KillBillBackend()
-        kb_backend.add_usage_data(resource, usage)
+        try:
+            kb_backend = KillBillBackend()
+            kb_backend.add_usage_data(resource, usage)
+        except KillBillError as e:
+            logger.error("Can't add usage for resource %s: %s", resource, e)
 
         resource.last_usage_update_time = timezone.now()
         resource.save(update_fields=['last_usage_update_time'])

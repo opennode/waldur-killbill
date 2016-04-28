@@ -22,6 +22,11 @@ class KillBillExtension(NodeConductorExtension):
             'INVOICE': {
                 'logo': 'gcloud-logo.png',
                 'company': 'OpenNode',
+                'address': 'Lille 4-205',
+                'country': 'Estonia',
+                'email': 'info@opennodecloud.com',
+                'postal': '80041',
+                'phone': '(+372) 555-55-55',
                 'bank': 'American Bank',
                 'account': '123456789',
             },

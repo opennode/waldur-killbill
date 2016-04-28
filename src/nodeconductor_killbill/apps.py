@@ -2,17 +2,17 @@ from django.apps import AppConfig
 from django.db.models import signals
 from django_fsm.signals import post_transition
 
-from nodeconductor.structure import models as structure_models
-from nodeconductor.core.handlers import preserve_fields_before_update
-
-from . import handlers
-
 
 class KillBillConfig(AppConfig):
     name = 'nodeconductor_killbill'
     verbose_name = "NodeConductor KillBill"
 
     def ready(self):
+        from nodeconductor.structure import models as structure_models
+        from nodeconductor.core.handlers import preserve_fields_before_update
+
+        from . import handlers
+
         Invoice = self.get_model('Invoice')
 
         signals.post_save.connect(
