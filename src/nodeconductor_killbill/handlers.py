@@ -1,5 +1,6 @@
 import logging
 
+from nodeconductor.structure import SupportedServices
 from nodeconductor.structure.models import PaidResource
 
 from .backend import KillBillBackend, KillBillError
@@ -7,6 +8,18 @@ from .log import event_logger
 
 
 logger = logging.getLogger(__name__)
+paid_models = PaidResource.get_all_models()
+
+
+def update_subscription_fields(model, queryargs=None, fields=None):
+    backend = KillBillBackend()
+    for resource in model.objects.exclude(billing_backend_id=None).filter(**queryargs):
+        try:
+            args = {k: reduce(getattr, v.split('__'), resource) for k, v in fields.items()}
+            backend.update_subscription_fields(resource.billing_backend_id, **args)
+        except KillBillError as e:
+            logger.error(
+                "Failed to update KillBill fields for resource %s: %s", resource, e)
 
 
 def log_invoice_save(sender, instance, created=False, **kwargs):
@@ -63,27 +76,41 @@ def update_resource_name(sender, instance, created=False, **kwargs):
 
 def update_project_name(sender, instance, created=False, **kwargs):
     if not created and instance.tracker.has_changed('name'):
-        backend = KillBillBackend()
-        for model in PaidResource.get_all_models():
-            for resource in model.objects.exclude(billing_backend_id=None).filter(project=instance):
-                try:
-                    backend.update_subscription_fields(
-                        resource.billing_backend_id, project_name=resource.project.full_name)
-                except KillBillError as e:
-                    logger.error(
-                        "Failed to update project name in KillBill for resource %s: %s",
-                        resource, e)
+        for model in paid_models:
+            update_subscription_fields(
+                model,
+                queryargs={'project': instance},
+                fields={'project_name': 'project__full_name'})
 
 
 def update_project_group_name(sender, instance, created=False, **kwargs):
     if not created and instance.tracker.has_changed('name'):
+        for model in paid_models:
+            update_subscription_fields(
+                model,
+                queryargs={'project__project_groups': instance},
+                fields={'project_name': 'project__full_name'})
+
+
+def update_service_name(sender, instance, created=False, **kwargs):
+    if not created and instance.tracker.has_changed('name'):
+        resources = SupportedServices.get_related_models(instance)['resources']
+        for model in resources:
+            if model in paid_models:
+                update_subscription_fields(
+                    model,
+                    queryargs={'service_project_link__service': instance},
+                    fields={'service_name': 'service_project_link__service__full_name'})
+
+
+def update_service_settings_name(sender, instance, created=False, **kwargs):
+    if not created and instance.tracker.has_changed('name'):
+        resources = SupportedServices.get_related_models(instance)['resources']
+        for model in resources:
+            if model in paid_models:
+                update_subscription_fields(
+                    model,
+                    queryargs={'service_project_link__service__settings': instance},
+                    fields={'service_name': 'service_project_link__service__full_name'})
+
         backend = KillBillBackend()
-        for model in PaidResource.get_all_models():
-            for resource in model.objects.exclude(billing_backend_id=None).filter(project__project_groups=instance):
-                try:
-                    backend.update_subscription_fields(
-                        resource.billing_backend_id, project_name=resource.project.full_name)
-                except KillBillError as e:
-                    logger.error(
-                        "Failed to update project group name in KillBill for resource %s: %s",
-                        resource, e)
