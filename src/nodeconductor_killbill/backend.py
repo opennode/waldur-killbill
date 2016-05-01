@@ -170,6 +170,7 @@ class KillBillAPI(object):
                 invoice['items'].append(dict(
                     backend_id=item['invoiceItemId'],
                     name=item['usageName'] or item['description'],
+                    service=fields['service_name'],
                     project=fields['project_name'],
                     resource=fields['resource_name'],
                     currency=item['currency'],
@@ -221,7 +222,8 @@ class KillBillAPI(object):
             self.update_subscription_fields(
                 subscription_id,
                 resource_name=resource.full_name,
-                project_name=resource.project.full_name)
+                project_name=resource.project.full_name,
+                service_name=resource.service_project_link.service.full_name)
             return subscription_id
         except NotFoundKillBillError:
             pass
@@ -239,7 +241,8 @@ class KillBillAPI(object):
         self.set_subscription_fields(
             subscription['subscriptionId'],
             resource_name=resource.full_name,
-            project_name=resource.project.full_name)
+            project_name=resource.project.full_name,
+            service_name=resource.service_project_link.service.full_name)
 
         return subscription['subscriptionId']
 
