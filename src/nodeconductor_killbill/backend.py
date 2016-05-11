@@ -105,9 +105,14 @@ class KillBillBackend(object):
         map(lambda i: i.delete(), cur_invoices.values())
 
     def subscribe(self, resource):
+        """ Return True if resource was not subscribed before """
         client_id = self.get_or_create_client()
-        resource.billing_backend_id = self.api.add_subscription(client_id, resource)
-        resource.save(update_fields=['billing_backend_id'])
+        billing_backend_id = self.api.add_subscription(client_id, resource)
+        if resource.billing_backend_id != billing_backend_id:
+            resource.billing_backend_id = billing_backend_id
+            resource.save(update_fields=['billing_backend_id'])
+            return True
+        return False
 
     def terminate(self, resource):
         self.api.del_subscription(resource.billing_backend_id)
