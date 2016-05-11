@@ -53,7 +53,7 @@ def update_today_usage():
     """
 
     for model in PaidResource.get_all_models():
-        for resource in model.objects.all():
+        for resource in model.objects.exclude(state=model.States.ERRED):
             update_today_usage_of_resource.delay(resource.to_string())
 
 
