@@ -8,7 +8,7 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>0.91.0',
+    'nodeconductor>=0.101.2',
     'lxml>=3.2',
     'xhtml2pdf>=0.0.6',
 ]
