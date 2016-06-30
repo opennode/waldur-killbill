@@ -7,7 +7,7 @@ License: Copyright 2015 OpenNode LLC. All rights reserved.
 Url: http://nodeconductor.com
 Source0: %{name}-%{version}.tar.gz
 
-Requires: nodeconductor > 0.102.1
+Requires: nodeconductor > 0.102.2
 Requires: python-lxml >= 3.2.0
 Requires: python-xhtml2pdf >= 0.0.6
 
