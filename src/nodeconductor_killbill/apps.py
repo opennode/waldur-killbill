@@ -2,6 +2,8 @@ from django.apps import AppConfig
 from django.db.models import signals
 from django_fsm.signals import post_transition
 
+from nodeconductor.cost_tracking.models import PayableMixin
+
 
 class KillBillConfig(AppConfig):
     name = 'nodeconductor_killbill'
@@ -27,7 +29,7 @@ class KillBillConfig(AppConfig):
             dispatch_uid='nodeconductor_killbill.handlers.log_invoice_delete',
         )
 
-        for index, resource in enumerate(structure_models.PaidResource.get_all_models()):
+        for index, resource in enumerate(PayableMixin.get_all_models()):
             post_transition.connect(
                 handlers.subscribe,
                 sender=resource,
@@ -55,6 +57,20 @@ class KillBillConfig(AppConfig):
                 dispatch_uid='nodeconductor_killbill.handlers.update_resource_name_{}_{}'.format(
                     resource.__name__, index),
             )
+
+        for index, service in enumerate(structure_models.Service.get_all_models()):
+            signals.post_save.connect(
+                handlers.update_service_name,
+                sender=service,
+                dispatch_uid='nodeconductor_killbill.handlers.update_service_name_{}_{}'.format(
+                    service.__name__, index),
+            )
+
+        signals.post_save.connect(
+            handlers.update_service_settings_name,
+            sender=structure_models.ServiceSettings,
+            dispatch_uid='nodeconductor_killbill.handlers.update_service_settings_name',
+        )
 
         signals.post_save.connect(
             handlers.update_project_name,

@@ -74,7 +74,7 @@ class Invoice(LoggableMixin, core_models.UuidMixin):
         projects = {}
         for item in invoice['items']:
             project = item['project']
-            resource = item['resource']
+            resource = '%s (%s)' % (item['resource'], item['service'])
             projects.setdefault(project, {'items': {}, 'amount': 0})
             projects[project]['amount'] += item['amount']
             projects[project]['items'].setdefault(resource, 0)
@@ -138,7 +138,7 @@ class Invoice(LoggableMixin, core_models.UuidMixin):
                 item['usage'] = "{:.3f} {} x {:.3f} {}".format(
                     usage, unit, value, item['currency'])
 
-            resource = item['resource']
+            resource = '%s (%s)' % (item['resource'], item['service'])
             resources.setdefault(resource, {'items': [], 'amount': 0})
             resources[resource]['amount'] += item['amount']
             resources[resource]['items'].append(item)

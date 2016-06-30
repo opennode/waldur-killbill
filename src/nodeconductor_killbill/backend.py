@@ -105,9 +105,14 @@ class KillBillBackend(object):
         map(lambda i: i.delete(), cur_invoices.values())
 
     def subscribe(self, resource):
+        """ Return True if resource was not subscribed before """
         client_id = self.get_or_create_client()
-        resource.billing_backend_id = self.api.add_subscription(client_id, resource)
-        resource.save(update_fields=['billing_backend_id'])
+        billing_backend_id = self.api.add_subscription(client_id, resource)
+        if resource.billing_backend_id != billing_backend_id:
+            resource.billing_backend_id = billing_backend_id
+            resource.save(update_fields=['billing_backend_id'])
+            return True
+        return False
 
     def terminate(self, resource):
         self.api.del_subscription(resource.billing_backend_id)
@@ -170,6 +175,7 @@ class KillBillAPI(object):
                 invoice['items'].append(dict(
                     backend_id=item['invoiceItemId'],
                     name=item['usageName'] or item['description'],
+                    service=fields['service_name'],
                     project=fields['project_name'],
                     resource=fields['resource_name'],
                     currency=item['currency'],
@@ -221,7 +227,8 @@ class KillBillAPI(object):
             self.update_subscription_fields(
                 subscription_id,
                 resource_name=resource.full_name,
-                project_name=resource.project.full_name)
+                project_name=resource.project.full_name,
+                service_name=resource.service_project_link.service.full_name)
             return subscription_id
         except NotFoundKillBillError:
             pass
@@ -239,7 +246,8 @@ class KillBillAPI(object):
         self.set_subscription_fields(
             subscription['subscriptionId'],
             resource_name=resource.full_name,
-            project_name=resource.project.full_name)
+            project_name=resource.project.full_name,
+            service_name=resource.service_project_link.service.full_name)
 
         return subscription['subscriptionId']
 
