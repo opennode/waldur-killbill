@@ -6,8 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
 from nodeconductor.cost_tracking import CostTrackingRegister
-from nodeconductor.cost_tracking.models import DefaultPriceListItem
-from nodeconductor.structure.models import Resource, PaidResource
+from nodeconductor.cost_tracking.models import DefaultPriceListItem, PayableMixin
+from nodeconductor.structure.models import Resource
 
 from .backend import KillBillBackend, KillBillError
 
@@ -27,7 +27,7 @@ def sync_pricelist():
 @shared_task(name='nodeconductor.killbill.sync_invoices')
 def sync_invoices():
     customers = set()
-    for model in PaidResource.get_all_models():
+    for model in PayableMixin.get_all_models():
         for resource in model.objects.exclude(billing_backend_id=''):
             customers.add(resource.customer)
 
@@ -52,7 +52,7 @@ def update_today_usage():
         2015-08-20 13:00    support-basic       1
     """
 
-    for model in PaidResource.get_all_models():
+    for model in PayableMixin.get_all_models():
         for resource in model.objects.exclude(state=model.States.ERRED):
             update_today_usage_of_resource.delay(resource.to_string())
 

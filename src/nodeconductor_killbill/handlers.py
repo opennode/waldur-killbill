@@ -1,14 +1,14 @@
 import logging
 
+from nodeconductor.cost_tracking.models import PayableMixin
 from nodeconductor.structure import SupportedServices
-from nodeconductor.structure.models import PaidResource
 
 from .backend import KillBillBackend, KillBillError
 from .log import event_logger
 
 
 logger = logging.getLogger(__name__)
-paid_models = PaidResource.get_all_models()
+paid_models = PayableMixin.get_all_models()
 
 
 def update_subscription_fields(model, queryargs=None, fields=None):

@@ -7,7 +7,7 @@ from django.utils.translation import gettext
 from nodeconductor.core.admin import AdminActionsRegister
 from nodeconductor.core.tasks import send_task
 from nodeconductor.cost_tracking.admin import DefaultPriceListItemAdmin
-from nodeconductor.structure.models import PaidResource
+from nodeconductor.cost_tracking.models import PayableMixin
 
 from .backend import KillBillBackend, KillBillError
 from .models import Invoice
@@ -26,7 +26,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         return my_urls + super(InvoiceAdmin, self).get_urls()
 
     def move_date(self, request):
-        for model in PaidResource.get_all_models():
+        for model in PayableMixin.get_all_models():
             for resource in model.objects.all():
                 try:
                     update_today_usage_of_resource(resource.to_string())
@@ -66,7 +66,7 @@ def subscribe_resources(request):
     erred_resources = {}
     subscribed_resources = []
     existing_resources = []
-    for model in PaidResource.get_all_models():
+    for model in PayableMixin.get_all_models():
         for resource in model.objects.exclude(state=model.States.ERRED):
             try:
                 backend = KillBillBackend(resource.customer)
