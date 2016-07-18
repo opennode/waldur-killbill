@@ -10,6 +10,7 @@ install_requires = [
     'nodeconductor>0.102.2',
     'lxml>=3.2',
     'xhtml2pdf>=0.0.6',
+    'html5lib<0.99999999',
     'Pillow>=2.0.0,<3.0.0',
 ]
 

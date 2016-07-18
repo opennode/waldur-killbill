@@ -1,8 +1,8 @@
 from django.apps import AppConfig
 from django.db.models import signals
-from django_fsm.signals import post_transition
 
 from nodeconductor.cost_tracking.models import PayableMixin
+from nodeconductor.structure.signals import resource_provisioned
 
 
 class KillBillConfig(AppConfig):
@@ -30,7 +30,7 @@ class KillBillConfig(AppConfig):
         )
 
         for index, resource in enumerate(PayableMixin.get_all_models()):
-            post_transition.connect(
+            resource_provisioned.connect(
                 handlers.subscribe,
                 sender=resource,
                 dispatch_uid='nodeconductor_killbill.handlers.subscribe_{}_{}'.format(
