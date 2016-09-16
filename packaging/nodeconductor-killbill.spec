@@ -10,7 +10,7 @@ Source0: %{name}-%{version}.tar.gz
 Requires: nodeconductor > 0.102.2
 Requires: python-lxml >= 3.2.0
 Requires: python-xhtml2pdf >= 0.0.6
-Requires: python-html5lib < 0.99999999
+Requires: python-html5lib < 1:0.99999999
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
