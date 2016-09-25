@@ -17,7 +17,7 @@ install_requires = [
 
 setup(
     name='nodeconductor-killbill',
-    version='0.5.0',
+    version='0.5.1',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
