@@ -1,5 +1,6 @@
 import logging
 
+from nodeconductor.core.utils import serialize_instance
 from nodeconductor.cost_tracking.models import PayableMixin
 from nodeconductor.structure import SupportedServices
 
@@ -49,13 +50,12 @@ def log_invoice_delete(sender, instance, **kwargs):
 
 
 def subscribe(sender, instance, name=None, source=None, **kwargs):
-    if source == instance.States.PROVISIONING and name == instance.set_online.__name__:
-        try:
-            backend = KillBillBackend(instance.customer)
-            backend.subscribe(instance)
-        except KillBillError as e:
-            logger.error(
-                "Failed to subscribe resource %s to KillBill: %s", instance.to_string(), e)
+    try:
+        backend = KillBillBackend(instance.customer)
+        backend.subscribe(instance)
+    except KillBillError as e:
+        logger.error(
+            "Failed to subscribe resource %s to KillBill: %s", serialize_instance(instance), e)
 
 
 def unsubscribe(sender, instance=None, **kwargs):
@@ -64,7 +64,7 @@ def unsubscribe(sender, instance=None, **kwargs):
         backend.terminate(instance)
     except KillBillError as e:
         logger.error(
-            "Failed to unsubscribe resource %s from KillBill: %s", instance.to_string(), e)
+            "Failed to unsubscribe resource %s from KillBill: %s", serialize_instance(instance), e)
 
 
 def update_resource_name(sender, instance, created=False, **kwargs):

@@ -32,7 +32,7 @@ Endpoints
 License
 -------
 
-NodeConductor KillBill plugin is open-source under Apache v2 license.
+NodeConductor KillBill plugin is open-source under MIT license.
 
 Indices and tables
 ==================

@@ -1,15 +1,16 @@
 Name: nodeconductor-killbill
 Summary: KillBill plugin for NodeConductor
 Group: Development/Libraries
-Version: 0.4.0
+Version: 0.5.0
 Release: 1.el7
-License: Copyright 2015 OpenNode LLC. All rights reserved.
+License: MIT
 Url: http://nodeconductor.com
 Source0: %{name}-%{version}.tar.gz
 
 Requires: nodeconductor > 0.102.2
 Requires: python-lxml >= 3.2.0
 Requires: python-xhtml2pdf >= 0.0.6
+Requires: python-html5lib < 1:0.99999999
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -36,6 +37,9 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Sun Sep 25 2016 Jenkins <jenkins@opennodecloud.com> - 0.5.0-1.el7
+- New upstream release
+
 * Thu Jun 30 2016 Jenkins <jenkins@opennodecloud.com> - 0.4.0-1.el7
 - New upstream release
 

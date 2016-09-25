@@ -7,16 +7,17 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>0.102.2',
+    'nodeconductor>=0.107.0',
     'lxml>=3.2',
     'xhtml2pdf>=0.0.6',
+    'html5lib<0.99999999',
     'Pillow>=2.0.0,<3.0.0',
 ]
 
 
 setup(
     name='nodeconductor-killbill',
-    version='0.4.0',
+    version='0.5.0',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
@@ -41,6 +42,6 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Operating System :: OS Independent',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT License',
     ],
 )
